@@ -36,7 +36,7 @@ define('WP_USE_THEMES', false);
 global $wp, $wp_query, $wp_the_query, $wp_rewrite, $wp_did_header;
 require(BASE_PATH . 'wp-load.php');
 
-USE THIS URL: https://news-jamessharp.icgonline.co.uk/wp-admin/plugins.php?domigrate=true
+USE THIS URL: https://posts-norcom.icgonline.co.uk/wp-admin/plugins.php?domigrate=true
 */
 define('SITE_ROOT', str_replace( 'wp-content', '', WP_CONTENT_DIR));
 
@@ -149,19 +149,19 @@ public function unserializeSensible($value) {
 
 
 
-      $categories = array('news','personalfinance','stocknewshighlight','blog');
-      $newcategories = array('market-news','personal-finance','stock-news-highlights','blog');
+      $categories = array('template');
+      $newcategories = array('general');
 
       $catsfordb = implode(',', array_map('self::add_quotes', $categories));
 
-      $rows = $this->wpdb2->get_results("SELECT * from pages where type IN (".$catsfordb.") AND visible_from >= '1655970780' ORDER BY page_id");
+      $rows = $this->wpdb2->get_results("SELECT * from post where post_type_id IN ("1") AND is_active >= '1' ORDER BY id");
       //var_dump($rows);
       //exit;
       //echo "<ul>";
       foreach ($rows as $obj) {
         $slug = $obj->slug;
-        $id = $obj->page_id;
-        $type =  $obj->type;
+        $id = $obj->id;
+        $type =  $obj->post_type_id;
         $newtype = null;
         $catid = 0;
         foreach ($categories as $key => $cat) {
@@ -174,10 +174,10 @@ public function unserializeSensible($value) {
           }
         }
         $f1 = preg_replace("/^.*\//","",$slug);
-        $title = $obj->name;
-        $published = $obj->visibility;
-        $deleted = $obj->deleted;
-        $published_date = $obj->visible_from;
+        $title = $obj->title;
+        $published = $obj->is_active;
+        $deleted = $obj->date_down;
+        $published_date = $obj->date_created;
         $data = null;
         //var_dump($published_date);
         if(isset($obj->data)){
@@ -196,11 +196,11 @@ public function unserializeSensible($value) {
             //var_dump($content);
             $excerpt = '';
             if(isset($content_data->snippet)){
-              $excerpt = $content_data->snippet;
+              $excerpt = $content_data->label;
             }
             $content = '';
             if(isset($content_data->content)){
-              $content = $content_data->content;
+              $content = $content_data->content_1;
             }
             $date = $content_data->visible_from;
             //var_dump($date);
